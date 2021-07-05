@@ -1,0 +1,297 @@
+<div class="subNav">
+
+</div> 
+
+<div class="wrapper" >
+ 
+    <mat-card id="contentWrap" >
+        <mat-tab-group [(selectedIndex)]="selectedTab" >
+          <mat-tab #tab0 label="Calendar" [disabled]='!tab0.isActive'>
+      
+                      
+                  
+                  <div id="calHeadWrap" style="float:left; margin-left: 5%;">
+                 
+                  <!-- <p style="color: grey">Select the date you would like to view or create inspections</p> -->
+                </div>
+                  <mat-form-field class="chooseDate">
+                      <input matInput [matDatepicker]="picker" placeholder="Choose a date" [formControl]="date" [value]="selectedDate" (change)="onDateChange()">
+                     
+                    </mat-form-field>
+             
+          
+                  <mat-calendar style="margin-top: 3%;" #calendar [selected]="selectedDate" (click)="calClick($event)" (selectedChange)="onSelect($event)">
+                  
+                  </mat-calendar>  
+            
+               
+            </mat-tab>
+            <mat-tab #tab1 label="Select Claims" [disabled]='!tab1.isActive'>
+              <a style="cursor: pointer;" (click)="reverseTab()"><img style="height: 15px; width: 15px; padding: 0px; float:left; margin-top: .1%;" src="/planner/assets/chevron-left.svg"><p class="link" style="margin-top: 1px;">Go Back to Calendar</p></a>
+                <h3 style=" padding-top: 0; margin-top: 1%; color: #666766; font-family: Abel;"><strong>Inspections</strong> | {{selectedDate | date:'fullDate'}}</h3>
+               
+                          <p style="margin-top: 2%; margin-bottom: -.5%; color:#666766;">Select Claims to Inspect:</p>
+                          <h4 style="  font-family: 'Roboto', sans-serif; color: white; background: #7fabc7; width: 100%; padding: 1%; margin-bottom: 1%;">Available Claims
+                          
+                              <input matInput #searchInput class="searchInput" placeholder="Search..." aria-placeholder="Search..." style="background: white; width: 15%; min-width: 100px; float: right; height: 50%; ">
+                   
+                          </h4>
+                        
+                      
+                        
+                   <div class="table-container">
+                 
+                           <table mat-table [dataSource]="(cwDataArray | searchInput:searchInput.value)"  style=" width: 100%;">
+                              <!-- Checkbox Column -->
+                                <ng-container matColumnDef="select">
+                                  <th mat-header-cell *matHeaderCellDef style="color: black; background:white;" >
+                                    <mat-checkbox 
+                                                  (change)="masterToggle()"
+                                                  (click)="$event.stopPropagation()"
+                                                  [checked]="isMasterChecked"
+                                                  [aria-label]="checkboxLabel()">
+                                    </mat-checkbox>
+                                  </th>
+                                  <td mat-cell *matCellDef="let row">
+                                    <mat-checkbox
+                                               (click) ="$event.stopPropagation()"
+                                               [checked]="row.isSelected"
+                                               (change)="row.isSelected = !row.isSelected"
+                                               (change)="setEqualTo()"
+                                                  [aria-label]="checkboxLabel(row)">
+                                    </mat-checkbox>
+                                  </td>
+                                </ng-container>
+                      
+                                <!-- Position Column -->
+                                <ng-container matColumnDef="position">
+                                  <th mat-header-cell *matHeaderCellDef  class="fontSize" style="font-weight: 700; font-size:12px; color: black; background:white;">No.</th>
+                                  <td mat-cell *matCellDef="let cwData"  class="fontSize" style="font-size:12px;">{{cwData.position}}</td>
+                                </ng-container>
+                              
+                                <!-- Insured Name Column -->
+                                <ng-container matColumnDef="insuredName">
+                                  <th mat-header-cell *matHeaderCellDef class="fontSize" style=" font-weight: 700; font-size:12px; color: black; background:white;">Insured's Name</th>
+                                  <td mat-cell *matCellDef="let cwData"  class="fontSize" style=" font-size:12px;">{{cwData.insuredLastName}}, {{cwData.insuredFirstName}}</td>
+                                </ng-container>
+
+                                <!-- Loss Address Column -->
+                                <ng-container matColumnDef="lossAddress">
+                                   <th mat-header-cell *matHeaderCellDef class="fontSize" style=" font-weight: 700; font-size:12px; color: black; background:white;">Loss Address</th>
+                                   <td mat-cell *matCellDef="let cwData"  class="fontSize" style="font-size:12px;">{{cwData.lossAddress1}} {{cwData.lossAddress2}}</td>
+                                 </ng-container>
+                                  
+                                 <!-- CSZ Column -->
+                                <ng-container matColumnDef="csz" >
+                                    <th mat-header-cell *matHeaderCellDef class="fontSize" style=" font-weight: 700; font-size:12px; color: black; background:white;">City, State, Zip Code</th>
+                                    <td mat-cell *matCellDef="let cwData"  class="fontSize" style="font-size:12px;">{{cwData.lossCity}}, {{cwData.lossState}} {{cwData.lossZipcode}}</td>
+                                  </ng-container>
+                              
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="fontSize"></tr>
+                        
+                                <tr id="availableClaims" mat-row *matRowDef="let row; columns: displayedColumns;" 
+                                 
+                                    (click)="row.isSelected = !row.isSelected"
+                                    (click)="setEqualTo()">
+                                </tr>
+                              </table>
+                       
+                            </div>       
+                            
+                            <p style="margin-top: 2%; margin-bottom: -.5%; color:#666766;">Claims Scheduled for Inspection on: {{selectedDate | date:'fullDate'}}</p>
+                              <h4 class="boxShadow" style=" font-family: 'Roboto', sans-serif;color: white; background: #7fabc7; width: 100%; padding: 1%;">Selected Claims</h4>
+                                <div class="table-container">
+                                  <table mat-table [dataSource]="selectedClaimsArray"  class="availableTable" style="width: 100%;">
+                                   
+                                    <!-- Checkbox Column -->
+                                    <ng-container matColumnDef="select">
+                                      <th mat-header-cell *matHeaderCellDef style="color: black; background:white;">
+                                        
+                                      </th>
+                                      <td mat-cell *matCellDef="let row">
+                                        <div style="color:#c5c5c5;">&#8854;</div>
+                                      </td>
+                                    </ng-container>
+                                  
+                                    <!-- Position Column -->
+                                    <ng-container matColumnDef="position">
+                                      <th mat-header-cell *matHeaderCellDef  style="font-weight: 700; font-size:12px;  color: black; background:white;">No.</th>
+                                      <td mat-cell *matCellDef="let cwData"  style="font-size:12px;">{{cwData.position}}</td>
+                                    </ng-container>
+                                  
+                                    <!-- Insured Name Column -->
+                                    <ng-container matColumnDef="insuredName">
+                                      <th mat-header-cell *matHeaderCellDef style="font-weight: 700; font-size:12px;  color: black; background:white;">Insured's Name</th>
+                                      <td mat-cell *matCellDef="let cwData"  style="font-size:12px;">{{cwData.insuredLastName}}, {{cwData.insuredFirstName}}</td>
+                                    </ng-container>
+                
+                                    <!-- Loss Address Column -->
+                                    <ng-container matColumnDef="lossAddress">
+                                       <th mat-header-cell *matHeaderCellDef style="font-weight: 700; font-size:12px;  color: black; background:white;">Loss Address</th>
+                                       <td mat-cell *matCellDef="let cwData"  style="font-size:12px;">{{cwData.lossAddress1}} {{cwData.lossAddress2}}</td>
+                                     </ng-container>
+                                      
+                                     <!-- CSZ Column -->
+                                    <ng-container matColumnDef="csz" >
+                                        <th mat-header-cell *matHeaderCellDef style="font-weight: 700; font-size:12px;  color: black; background:white;">City, State, Zip Code</th>
+                                        <td mat-cell *matCellDef="let cwData"  style="font-size:12px;">{{cwData.lossCity}}, {{cwData.lossState}} {{cwData.lossZipcode}}</td>
+                                      </ng-container>
+                                  
+                                      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                                
+                                    <tr id="availableClaims" mat-row *matRowDef="let row; columns: displayedColumns;" (click)="row.isSelected = !row.isSelected" (click)="setEqualTo()" >
+                                    </tr>
+                             
+                                  </table>
+                                </div>          
+   
+                <button mat-button (click)="changeTab()" id="routeButton">Create Route</button>
+            </mat-tab>
+            <mat-tab #tab2 label="Claims for Inspection"  style="overflow-x: hidden;" [disabled]='!tab2.isActive'>
+            
+              <a style="cursor: pointer;" (click)="reverseTab()"><img style="height: 15px; width: 15px; padding: 0px; float:left; margin-top: .1%;" src="/planner/assets/chevron-left.svg"><p class="link" style="margin-top: 1px;">Go Back to Claims Selector</p></a>
+
+              <h3 style=" padding-top: 0; margin-top: 1%; color: #666766; font-family: Abel;"><strong>Inspections</strong> | {{selectedDate | date:'fullDate'}}</h3>
+              
+              <p style="margin-top: 2%; color:#666766;">Claims Scheduled for Inspection on: {{selectedDate | date:'fullDate'}}<br>Drag and Drop to reorder - or let Claimswire decide the best route</p>
+              <h4 style="  font-family: 'Roboto', sans-serif; color: white; background: #7fabc7; width: 100%; padding: 1%; margin: 0; margin-bottom: 1%;">Claims Scheduled for Inspection</h4>
+              
+              <div class="flex1">
+                <div id="mapWrap">
+                <agm-map #map  [scaleControl]="true" [latitude]="lat" [longitude]="lng" [fitBounds]="true" [fullscreenControl]="true" [styles]="mapStyle" [zoom]="currentZoom" [maxZoom]="zoomMax" [minZoom]="4" (zoomChange)="onMapChange($event)">
+                        <!-- Drop down list that is populated dynamically via JSON file -->
+      
+                      
+                      <!-- Claims Markers -->
+                      <agm-marker-cluster #cluster imagePath="https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m" 
+                      [minimumClusterSize]="10" [gridSize]="100">
+                      <div *ngFor="let data of cwDataArray; let i = index; trackBy: trackByFn">
+                        <agm-marker #marker *ngIf="data.isSelected"    
+                          #marker 
+                          [visible]="hiddenOrSubmitted(data)"             
+                          [animation]="markerAnimation"                  
+                          [latitude]="data.lat" [longitude]="data.lng"
+                          [id]="data.policyNumber"
+                          [title]="data.policyNumber"             
+                          [agmFitBounds]="true"
+                          [iconUrl] ="
+                                {
+                                  url: '/planner/assets/point.png',
+                                  scaledSize: {
+                                      width: 25,
+                                      height: 40
+                                  }
+                              }"
+                          [markerClickable]="true"
+                          [zIndex]="markerZ"
+                          (markerRightClick)="markerRightClick($event)"
+                          (mouseOver)="claimMouseOver($event, data)"
+                          (mouseOut)="claimMouseOut($event,data)">       
+                            
+                      
+                        
+                        </agm-marker>
+                      </div>
+                    </agm-marker-cluster>
+              
+
+                  
+                </agm-map>
+              </div>
+                <mat-card id="cardData" *ngIf="isMouseIn">
+                    <h5 style="color: #00254e"><strong>{{finderType}}</strong></h5>
+                    <hr style="padding: 0; margin: 0;border-color: #7ea9c5;">
+                    <h5 style="color: #2b86c7">{{finderTitle}}</h5>
+                    <h6>{{finderAddress1}}, {{finderAddress2}}</h6>
+                    <h6>{{finderCity}}, {{finderState}} {{finderZip}}</h6>
+                </mat-card> 
+
+    
+               <mat-card class="claimAssignments">
+                  
+              
+                    <h4 style="color:#00254e;">Order of Inspections:</h4>
+                  
+                  
+                    
+                      <div style="padding: 2%; overflow-x: hidden;">
+                
+                  
+                                <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" style="width:100%;">
+                             
+                              <div class="example-box" cdkDrag *ngFor="let select of selectedClaimsArray">   
+                                <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                                      {{select.insuredFirstName}} {{select.insuredLastName}}<br>
+                                       {{select.insuredPhone}} <br>
+                                       {{select.lossAddress1}} {{select.lossAddress2}}<br>
+                                       {{select.lossCity}}, {{select.lossState}} {{select.lossZipcode}}<br>
+                                     
+                                       <ngb-timepicker class="timePicker" [(ngModel)]="select.time" [meridian]="true"></ngb-timepicker>
+                                                                    
+                                 
+                                  </div>
+                                  
+                                </div>
+                                
+                         
+                          
+                     
+                    
+                      </div>
+              
+
+                
+             
+                
+                    </mat-card>
+                  </div>
+                   
+          
+       
+                
+                    <div class="mapButtonWrap">
+                     <mat-checkbox [checked]="true">Set Inspection Date for Claims Selected</mat-checkbox>
+                     <mat-checkbox [checked]="true">Send Email to Insured Informing them of Inspection Date</mat-checkbox>
+                     <button mat-raised-button id="printAssignments">Print</button>
+                    <button mat-raised-button id="submitAssignments"  (click)="sendtoGoogle()">Send to Google Maps</button>
+                  </div>
+                 
+       
+            </mat-tab>
+            <!-- <mat-tab label="Map Overview">
+              <iframe #gMapiFrame
+                width="1250"
+                height="500"
+                frameborder="0" style="border:0"
+                src="" allowfullscreen>
+              </iframe>
+            </mat-tab> -->
+        </mat-tab-group>
+  </mat-card>
+</div>
+
+<div class="copyrightWrapper">
+<div class="row">
+  <div class="col-xs-12">
+      <ul>
+       <li style="float: left;">
+        <p>Copyright © 2009 - 2019 · Simultaneous Solutions, Inc. All Rights Reserved</p>
+        </li>
+       
+       <li style="float: right;">
+        <a class="TOS" href="">Terms of Service </a>|<a class="TOS" href=""> Privacy Policy</a>
+       </li>
+      
+    </ul>
+  </div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+

@@ -17,12 +17,12 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import { FormControl } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 
-const API_KEY: string = 'AIzaSyBp24pbzxjI2Lvz0SADUvR1dcfZoPZTHIQ';
-const CW_URL: string = 'https://claimswire-dev.simsol.com/mapdata/claims/';
+const API_KEY: string = 'REDACTED';
+const CW_URL: string = 'https://REDACTED.simsol.com/mapdata/claims/';
 //const CW_URL: string = 'http://localhost:3000/assignment';
-const CW_PUT_URL: string = 'https://claimswire-dev.simsol.com/mapdata/claims/';
-//const ADJ_URL: string = 'http://192.168.2.122:3000/adjusters/';
-const ADJ_URL: string = 'http://localhost:4000/adjusters';
+const CW_PUT_URL: string = 'https://REDACTED-dev.simsol.com/mapdata/claims/';
+//const ADJ_URL: string = 'http://REDACTED:3000/adjusters/';
+const ADJ_URL: string = 'http://REDACTED/adjusters';
 const GOOGLE_URL: string = "https://maps.googleapis.com/maps/api/geocode/json?address=";
 const DIRECTIONS_URL: string="https://maps.googleapis.com/maps/api/directions/json?";
 const GOOGLE_DIRECTIONS_URL: string ="https://www.google.com/maps/dir/?api=1&origin=";
